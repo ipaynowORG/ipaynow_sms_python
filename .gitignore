@@ -1,0 +1,6 @@
+
+\.idea/
+
+example/__pycache__/
+
+ipaynowPythonSdk/ipaynow/__pycache__/
