@@ -4,3 +4,9 @@
 example/__pycache__/
 
 ipaynowPythonSdk/ipaynow/__pycache__/
+
+ipaynowSmsPythonSdk/build/
+
+ipaynowSmsPythonSdk/dist/
+
+ipaynowSmsPythonSdk/ipaynow_sms\.egg-info/

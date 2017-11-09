@@ -2,6 +2,7 @@ import os
 import sys
 import warnings
 
+from ipaynow_sms import VERSION
 
 try:
     from setuptools import setup
@@ -22,23 +23,18 @@ if sys.version_info < (2, 6):
         'Python 2.5 is no longer officially supported by ipaynow. '
         'If you have any questions, please contact us at www.ipaynow.cn.',
         DeprecationWarning)
-  
-
-  
 # Don't import ipaynow module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ipaynow'))
-from version import VERSION
-
 
 setup(
-    name='ipaynow',
+    name='ipaynow_sms',
     cmdclass={'build_py': build_py},
     version=VERSION,
-    description='ipaynow python bindings',
+    description='ipaynow_sms python bindings',
     author='ipaynow',
     author_email='www.ipaynow.com',
     url='https://pay.ipaynow.cn/',
-    packages=['ipaynow'],
+    packages=['ipaynow_sms'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

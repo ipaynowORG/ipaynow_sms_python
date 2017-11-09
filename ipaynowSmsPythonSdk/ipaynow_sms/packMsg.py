@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=python:et:sw=4:ts=4:sts=4
+import base64
+from _md5 import md5
 
-from ipaynow.paramlist import WP001_PostList
-from ipaynow.error import APIInputError
-from ipaynow.md5Faced import md5calc
+import binascii
+from ipaynow_sms.error import APIInputError
+from ipaynow_sms.desUtil import encrypt
+from ipaynow_sms.paramlist import S01_PostList
 
 try:
     from urllib import urlencode
@@ -29,11 +32,19 @@ class PackMsgSend:
     __filterRule = []
     __fromStrMd5 = ""
     # __md5Key = ""
-    __appKey = ""
+    __appId = ""
+    __md5Key = ""
+    __3desKsy = ""
     __md5Result = ""
+    __message1 =""
+    __message2 = ""
+    __message3 = ""
 
-    def __init__(self, appKey, sourcedict={}, filterrule=[]):
+
+    def __init__(self,appId, appKey,desKey, sourcedict={}, filterrule=[]):
+        self.__appId = appId
         self.__appKey = appKey
+        self.__3desKsy = desKey
         self.__srcDict = sourcedict
         self.__filterRule = filterrule
 
@@ -82,23 +93,17 @@ class PackMsgSend:
             if formContentMd5[1] == '' or formContentMd5[1] == None:
                 continue
             fromstrmd5 += str(formContentMd5[0]) + "=" + str(formContentMd5[1]) + "&"
-        self.__fromStrMd5 = fromstrmd5
-
-    def __calcMd5(self):
-        # remove string that don't join md5 calc
-        sourceString = self.__fromStrMd5
-        securityKeyMd5 = md5calc(self.__appKey.encode('utf-8'))
-        sourceString += securityKeyMd5
-        # print("待签名字符串:{}".format(sourceString))
-        md5Result = md5calc(sourceString.encode('utf_8'))
-        self.__tarDict['mhtSignature'] = md5Result
-        self.__md5Result = md5Result
+        self.__fromStrMd5 = fromstrmd5[:-1]
 
     def getResultString(self):
         self.__inputFilter()
         self.__createFromStr()
-        self.__calcMd5()
-        resultStr = urlencode(self.__tarDict)
+        self.__message1 = base64.b64encode(("appId="+self.__appId).encode(encoding="utf-8")) #base64.encodebytes(binascii.b2a_hex(("appId="+self.__appId).encode()))
+        print(self.__message1)
+        self.__message2 = encrypt(self.__3desKsy,self.__fromStrMd5) #base64(3DES(报文原文)
+        self.__message3 =   base64.decodestring(md5(self.__fromStrMd5 + "&" + self.__md5Key))#base64(MD5(报文原文+&+ md5Key))
+        #self.__calcMd5()
+        resultStr = urlencode(self.__message1 + "|" + self.__message2 + "|" + self.__message3)
         return resultStr
 
     def test(self):
@@ -129,28 +134,15 @@ if __name__ == '__main__':
         else:
             assert False, "unhandled option"
     paypara = {
-        'funcode': 'WP001',
-        'version': '1.0.0',
-        'appId': '150753082825470',
-        'mhtOrderType': '01',
-        'mhtCurrencyType': '156',
-        'mhtOrderDetail': 'ipaynowPythonSDKTestOrder',
-        'mhtOrderTimeOut': 3600,
-        'notifyUrl': 'http://posp.ipaynow.cn:10808/cpgatetest/notify',
-        'mhtCharset': 'UTF-8',
-        'deviceType': '05',
-        'payChannelType': '13',
-        'channelAuthCode': '134954669523328956',
-        'mhtReserved': '',
-        'consumerId': '',
-        'mhtSignType': 'MD5'
+        'funcode': "S01",
+        'appId': "150753086263684",
+        'mhtOrderNo': "industry2",
+        'content':'php 行业短信测试',
+        'mobile': "17701087752",
+        'notifyUrl': "www.baidu.com",
     }
-    import time
-
-    timestr = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-    paypara['mhtOrderStartTime'] = '20171027101225'
     try:
-        pms = PackMsgSend("8jTST7ywIBY0QQ3RlcxWEl08Xj9gaYyQ", paypara, WP001_PostList)
+        pms = PackMsgSend("150753086263684","zHGKLmQaU9PLMEGObyubsV5uhDAeYVqQ","w75zriHtT85zpCYW3y8Dpw2k", paypara, S01_PostList)
         resultStr = pms.getResultString()
         print(resultStr)
     except APIInputError as e:
