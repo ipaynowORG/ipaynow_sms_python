@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     b = base64.b64encode("funcode=S01&responseCode=01&responseMsg=商户订单号重复!&responseTime=20171110182013 ".encode())
     print(b)
-    a = base64.b64decode(b)
+    a = base64.b64decode("nb+Io747oF85e0G5u6wfbKU8Tiu0Ry8BAZdw+772u7AkMoSNYzv0q/TgRJcuxuGZbV2+bAERP3Dpq+A5yAc1nYQfhn5/GEo3q2ARnbNHOaq2fzYTS32fNV/oaD/Txyk5".encode('ASCII'))
     print(str(a))
 
     # print ("Plann Text: %s" % decryptdata)
