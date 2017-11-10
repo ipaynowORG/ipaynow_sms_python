@@ -3,8 +3,8 @@
 from ipaynow_sms.packMsg import PackMsgSend
 from ipaynow_sms.paramlist import S01_PostList, SMS_QUERY_PostList
 
-def getMessageStr(appKey,payparam = {}):
-    pms = PackMsgSend(appKey,payparam,S01_PostList)
+def getMessageStr(appKey,desKey,payparam = {}):
+    pms = PackMsgSend(payparam["appId"],appKey,desKey,payparam,S01_PostList)
     return pms.getResultString()
 
 def query(appKey,queryparam = {}):

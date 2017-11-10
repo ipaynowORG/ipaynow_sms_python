@@ -24,7 +24,7 @@ if sys.version_info < (2, 6):
         'If you have any questions, please contact us at www.ipaynow.cn.',
         DeprecationWarning)
 # Don't import ipaynow module here, since deps may not be installed
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ipaynow'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ipaynow_sms'))
 
 setup(
     name='ipaynow_sms',

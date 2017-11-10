@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=python:et:sw=4:ts=4:sts=4
 import base64
-from _md5 import md5
+import urllib
 
-import binascii
 from ipaynow_sms.error import APIInputError
-from ipaynow_sms.desUtil import encrypt
+from ipaynow_sms.desUtil import base64Encryt, md5Encrypt, desEncrypt
 from ipaynow_sms.paramlist import S01_PostList
 
 try:
@@ -31,7 +30,6 @@ class PackMsgSend:
     __tarListJoinMd5 = []
     __filterRule = []
     __fromStrMd5 = ""
-    # __md5Key = ""
     __appId = ""
     __md5Key = ""
     __3desKsy = ""
@@ -43,7 +41,7 @@ class PackMsgSend:
 
     def __init__(self,appId, appKey,desKey, sourcedict={}, filterrule=[]):
         self.__appId = appId
-        self.__appKey = appKey
+        self.__md5Key = appKey
         self.__3desKsy = desKey
         self.__srcDict = sourcedict
         self.__filterRule = filterrule
@@ -98,21 +96,20 @@ class PackMsgSend:
     def getResultString(self):
         self.__inputFilter()
         self.__createFromStr()
-        self.__message1 = base64.b64encode(("appId="+self.__appId).encode(encoding="utf-8")) #base64.encodebytes(binascii.b2a_hex(("appId="+self.__appId).encode()))
-        print(self.__message1)
-        self.__message2 = encrypt(self.__3desKsy,self.__fromStrMd5) #base64(3DES(报文原文)
-        self.__message3 =   base64.decodestring(md5(self.__fromStrMd5 + "&" + self.__md5Key))#base64(MD5(报文原文+&+ md5Key))
+        self.__message1 = base64.b64encode(("appId="+self.__appId).encode(encoding="utf-8")).decode() #base64.encodebytes(binascii.b2a_hex(("appId="+self.__appId).encode()))
+        print("第一部分：" + self.__message1)
+        self.__message2 = desEncrypt(self.__3desKsy,self.__fromStrMd5).decode() #base64(3DES(报文原文)
+        print("第二部分：" +self.__message2.replace(" ",""))
+        print("md5 明文" + self.__fromStrMd5 + "&" + self.__md5Key)
+        print("md5 密文" + md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key))
+        self.__message3 = base64.b64encode(md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key).encode(encoding="utf-8")).decode()#base64(MD5(报文原文+&+ md5Key))
+        print("第三部分：" +self.__message3)
         #self.__calcMd5()
-        resultStr = urlencode(self.__message1 + "|" + self.__message2 + "|" + self.__message3)
+        urlstr = self.__message1 + "|" + self.__message2 + "|" + self.__message3
+        resultStr = urllib.parse.quote(urlstr)
+        print(resultStr)
+        # resultStr = urlencode(urlstr)
         return resultStr
-
-    def test(self):
-        # print("__fromstr :",self.__fromStr)
-        # print("__fromstrmd5 :",self.__fromStrMd5)
-        # print("__tarDict :",self.__tarDict)
-        # print("__tarDictJoinMd5 :",self.__tarDictJoinMd5)
-        pass
-
 
 if __name__ == '__main__':
     try:
@@ -137,14 +134,13 @@ if __name__ == '__main__':
         'funcode': "S01",
         'appId': "150753086263684",
         'mhtOrderNo': "industry2",
-        'content':'php 行业短信测试',
+        'content':'python测试',
         'mobile': "17701087752",
         'notifyUrl': "www.baidu.com",
     }
     try:
         pms = PackMsgSend("150753086263684","zHGKLmQaU9PLMEGObyubsV5uhDAeYVqQ","w75zriHtT85zpCYW3y8Dpw2k", paypara, S01_PostList)
         resultStr = pms.getResultString()
-        print(resultStr)
     except APIInputError as e:
         print(e)
 

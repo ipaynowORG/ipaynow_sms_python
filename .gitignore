@@ -10,3 +10,5 @@ ipaynowSmsPythonSdk/build/
 ipaynowSmsPythonSdk/dist/
 
 ipaynowSmsPythonSdk/ipaynow_sms\.egg-info/
+
+ipaynowSmsPythonSdk/ipaynow_sms/__pycache__/
