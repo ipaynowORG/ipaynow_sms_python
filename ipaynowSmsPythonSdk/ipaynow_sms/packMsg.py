@@ -99,18 +99,23 @@ class PackMsgSend:
         self.__message1 = base64.b64encode(("appId="+self.__appId).encode(encoding="utf-8")).decode() #base64.encodebytes(binascii.b2a_hex(("appId="+self.__appId).encode()))
         print("第一部分：" + self.__message1)
         self.__message2 = desEncrypt(self.__3desKsy,self.__fromStrMd5).decode() #base64(3DES(报文原文)
-        print("第二部分：" +self.__message2.replace(" ",""))
-        print("md5 明文" + self.__fromStrMd5 + "&" + self.__md5Key)
-        print("md5 密文" + md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key))
-        self.__message3 = base64.b64encode(md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key).encode(encoding="utf-8")).decode()#base64(MD5(报文原文+&+ md5Key))
-        print("第三部分：" +self.__message3)
-        #self.__calcMd5()
+        print("第二部分：" + self.__message2)
+        self.__message3 = base64.b64encode(md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key).encode(encoding="utf-8")).decode()  # base64(MD5(报文原文+&+ md5Key))
+        print("第三部分：" + self.__message3)
+        # self.__calcMd5()
         urlstr = self.__message1 + "|" + self.__message2 + "|" + self.__message3
-        resultStr = urllib.parse.quote(urlstr)
-        print(resultStr)
-        # resultStr = urlencode(urlstr)
+        resultStr = urllib.parse.quote(urlstr,safe="%2F") #注意一点要将“/” 编码为 “%2F”
+        # resultStr = urllib.urlencode(urlstr)
         return resultStr
 
+    def getQueryString(self):
+        self.__inputFilter()
+        self.__createFromStr()
+        sign = md5Encrypt(self.__fromStrMd5 + "&" + self.__md5Key)
+        urlstr = self.__fromStrMd5 + "&mchSign=" + sign
+        # resultStr = urllib.parse.quote(urlstr, safe="%2F")  # 注意一点要将“/” 编码为 “%2F”
+        # resultStr = urllib.urlencode(urlstr)
+        return urlstr
 if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hf:", ["help", "file="])

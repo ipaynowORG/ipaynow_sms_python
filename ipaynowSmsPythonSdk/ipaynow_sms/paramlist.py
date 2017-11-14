@@ -28,12 +28,11 @@ YX_01_PostList = [
 
 
 
-# Q001-退款查询接口
-# 接口接入URL：https://pay.ipaynow.cn/refund/refundQuery
+# 查询接口
 SMS_QUERY_PostList = [
-    {'name': 'funcode', 'mandatory': 'Y', 'md5': 'Y', 'type': 'str', 'len': 5, 'desp': "功能码"},
+    {'name': 'funcode', 'mandatory': 'Y', 'md5': 'Y', 'type': 'str', 'len': 9, 'desp': "功能码"},
     {'name': 'appId', 'mandatory': 'Y', 'md5': 'Y', 'type': 'str', 'len': 40, 'desp': "商户应用唯一标识"},
     {'name': 'nowPayOrderNo', 'mandatory': 'Y', 'md5': 'Y', 'type': 'str', 'len': 40, 'desp': "现在支付订单号"},
     {'name': 'mobile', 'mandatory': 'Y', 'md5': 'Y', 'type': 'str', 'len': 11, 'desp': "手机号"},
-    {'name': 'mchSign', 'mandatory': 'Y', 'md5': 'N', 'type': 'str', 'len': 32, 'desp': "商户签名"}
+    {'name': 'mchSign', 'mandatory': 'N', 'md5': 'N', 'type': 'str', 'len': 32, 'desp': "商户签名"}
 ]

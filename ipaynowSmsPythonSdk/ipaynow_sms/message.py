@@ -1,9 +1,68 @@
+import base64
 import urllib
+from _md5 import md5
 
 from ipaynow_sms import interface
+from ipaynow_sms.desUtil import desDecrypt, md5Encrypt
 from pip._vendor import requests
 from ipaynow_sms.error import APIInputError
 
+url = "https://sms.ipaynow.cn" #生产环境
+# url = "https://dby.ipaynow.cn/sms" #测试环境
+
+
+'''
+ 行业短信
+ appId 商户应用Id 
+ appKey 商户应用秘钥
+ desKey des秘钥
+ mhtOrderNo 商户订单号
+ mobile 发送手机号 
+ content 短信内容
+ notifyUrl 后台通知地址
+'''
+def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
+    return message("S01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
+
+'''
+ 营销短信
+ appId 商户应用Id 
+ appKey 商户应用秘钥
+ desKey des秘钥
+ mhtOrderNo 商户订单号
+ mobile 发送手机号 
+ content 短信内容
+ notifyUrl 后台通知地址
+'''
+def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
+    return message("YX_01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
+
+
+''' 
+ 短信查询   
+ appId 商户应用Id 
+ appKey 商户应用秘钥
+ nowPayOrderNo 现在支付订单号
+ mobile 手机号   
+'''
+def query(appId, appKey, nowPayOrderNo, mobile):
+    paypara = {
+        'funcode': "SMS_QUERY",
+        'appId': appId,
+        'nowPayOrderNo': nowPayOrderNo,
+        'mobile': mobile,
+    }
+    messageStr = ""
+    try:
+        messageStr = interface.query(appKey, paypara)
+    except APIInputError as ipse:
+        print(ipse)
+    except Exception as e:
+        print(e)
+        print(e.with_traceback)
+    resp = requests.post(url, messageStr)
+    result = urllib.parse.unquote(resp.text)
+    return result
 
 def message(funcode, appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
     paypara = {
@@ -23,13 +82,16 @@ def message(funcode, appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl
     except Exception as e:
         print(e)
         print(e.with_traceback)
-    resp = requests.post("https://sms.ipaynow.cn", messageStr)
+    resp = requests.post(url, messageStr)
     result = urllib.parse.unquote(resp.text)
-    print(result)
     return1 = result.split("|")[0];
     if return1 == "0":
        return "fail"
     return2 = result.split("|")[1];
-    return3 = result.split("|")[2];
+    return3 = base64.b64decode(result.split("|")[2]);
+    originalMsg = desDecrypt(desKey,return2.strip())
+    sign = md5Encrypt(originalMsg + "&" + appKey)
+    if str(return3,encoding="UTF-8") == sign:
+        return originalMsg
+    return "verfiy sign fail"
 
-    return

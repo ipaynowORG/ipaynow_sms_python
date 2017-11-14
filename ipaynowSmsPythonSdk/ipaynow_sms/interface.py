@@ -8,8 +8,8 @@ def getMessageStr(appKey,desKey,payparam = {}):
     return pms.getResultString()
 
 def query(appKey,queryparam = {}):
-    pms = PackMsgSend(appKey,queryparam,SMS_QUERY_PostList)
-    return pms.getResultString()
+    pms = PackMsgSend(queryparam["appId"],appKey,"",queryparam,SMS_QUERY_PostList)
+    return pms.getQueryString()
 
 def parseMessage(instr = ""):
     print(instr)
