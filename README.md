@@ -158,4 +158,17 @@
         def query(appId, appKey, nowPayOrderNo, mobile)              
 
 <h2 id='3'> 3. DEMO </h2>
-   messageTest.py
+
+    使用方法:
+   
+   您可以从 GitHub 上下载 Python SDK 的源代码：
+   
+    git clone https://github.com/ipaynowORG/ipaynow_sms_python.git
+
+    1.cd 进入ipaynowSmsPythonSdk文件夹
+    2.执行 "python setup.py install"
+    3.在代码中 import ipaynow_sms
+     参考示例代码
+     示例代码
+     cd 进入example文件夹
+     运行 python messageTest.py
