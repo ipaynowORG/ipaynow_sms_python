@@ -59,8 +59,9 @@
          mobile 发送手机号 
          content 短信内容
          notifyUrl 后台通知地址
+         isTest 是否测试 True 测试环境 False 生产环境
         '''
-        def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)             
+        def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest)             
 
 <h5 id='2.1.2'></h4>
 
@@ -75,8 +76,9 @@
          mobile 发送手机号 
          content 短信内容 （内容请加 回复TD退订）
          notifyUrl 后台通知地址
+         isTest 是否测试 True 测试环境 False 生产环境
         '''
-        def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
+        def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest)
 
 
 <h4 id='2.2'>2.2 接受通知(状态报告)</h4>
@@ -154,8 +156,9 @@
          appKey 商户应用秘钥
          nowPayOrderNo 现在支付订单号
          mobile 手机号   
+         isTest 是否测试 True 测试环境 False 生产环境
         '''
-        def query(appId, appKey, nowPayOrderNo, mobile)              
+        def query(appId, appKey, nowPayOrderNo, mobile,isTest)              
 
 <h2 id='3'> 3. DEMO </h2>
 

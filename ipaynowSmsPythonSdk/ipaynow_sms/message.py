@@ -7,8 +7,8 @@ from ipaynow_sms.desUtil import desDecrypt, md5Encrypt
 from pip._vendor import requests
 from ipaynow_sms.error import APIInputError
 
-url = "https://sms.ipaynow.cn" #生产环境
-# url = "https://dby.ipaynow.cn/sms" #测试环境
+proUrl = "https://sms.ipaynow.cn" #生产环境
+testUrl = "https://dby.ipaynow.cn/sms" #测试环境
 
 
 '''
@@ -20,9 +20,10 @@ url = "https://sms.ipaynow.cn" #生产环境
  mobile 发送手机号 
  content 短信内容
  notifyUrl 后台通知地址
+ isTest 是否测试 True 测试环境 False 生产环境
 '''
-def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
-    return message("S01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
+def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest):
+    return message("S01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest)
 
 '''
  营销短信
@@ -33,9 +34,10 @@ def industryMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
  mobile 发送手机号 
  content 短信内容
  notifyUrl 后台通知地址
+ isTest 是否测试 True 测试环境 False 生产环境
 '''
-def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
-    return message("YX_01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl)
+def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest):
+    return message("YX_01",appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest)
 
 
 ''' 
@@ -44,8 +46,9 @@ def salesMessage(appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
  appKey 商户应用秘钥
  nowPayOrderNo 现在支付订单号
  mobile 手机号   
+ isTest 是否测试 True 测试环境 False 生产环境
 '''
-def query(appId, appKey, nowPayOrderNo, mobile):
+def query(appId, appKey, nowPayOrderNo, mobile,isTest):
     paypara = {
         'funcode': "SMS_QUERY",
         'appId': appId,
@@ -60,11 +63,15 @@ def query(appId, appKey, nowPayOrderNo, mobile):
     except Exception as e:
         print(e)
         print(e.with_traceback)
+    if isTest:
+        url = testUrl
+    else:
+        url = proUrl
     resp = requests.post(url, messageStr)
     result = urllib.parse.unquote(resp.text)
     return result
 
-def message(funcode, appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl):
+def message(funcode, appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl,isTest):
     paypara = {
         'funcode': funcode,
         'appId': appId,
@@ -82,6 +89,10 @@ def message(funcode, appId, appKey,desKey, mhtOrderNo, mobile,content, notifyUrl
     except Exception as e:
         print(e)
         print(e.with_traceback)
+    if isTest:
+        url = testUrl
+    else:
+        url = proUrl
     resp = requests.post(url, messageStr)
     result = urllib.parse.unquote(resp.text)
     return1 = result.split("|")[0];
